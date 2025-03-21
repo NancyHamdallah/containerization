@@ -31,5 +31,5 @@ jobs:
       # Step 4: Build and push Docker images for each microservice
       - name: Build and Push Docker Images
         run: |
-          docker-compose -f docker-compose-microservices.yml build  # Build the services defined in the docker-compose file
-          docker-compose -f docker-compose-microservices.yml push   # Push the images to Docker Hub (or your registry)
+          docker compose -f docker-compose-microservices.yml build  # Build the services defined in the docker-compose file
+          docker compose -f docker-compose-microservices.yml push   # Push the images to Docker Hub (or your registry)
