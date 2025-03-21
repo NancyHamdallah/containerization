@@ -27,6 +27,7 @@ public class VideoStreamController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
         String videoUrl = metadataResponse.getBody();
+        System.out.println("video url" + videoUrl);
         ResponseEntity<byte[]> videoResponse = restTemplate.getForEntity(fileSystemServiceUrl + filename, byte[].class);
         if (videoResponse.getStatusCode() == HttpStatus.OK) {
             return ResponseEntity.ok()
