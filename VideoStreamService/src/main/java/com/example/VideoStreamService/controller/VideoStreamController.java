@@ -31,6 +31,7 @@ public class VideoStreamController {
         ResponseEntity<byte[]> videoResponse = restTemplate.getForEntity(fileSystemServiceUrl + filename, byte[].class);
         if (videoResponse.getStatusCode() == HttpStatus.OK) {
             System.out.println("testActionWorkFLow");
+            System.out.println("testActionWorkFLow");
             return ResponseEntity.ok()
                     .contentType(MediaType.valueOf("video/mp4"))
                     .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename= " + filename)
