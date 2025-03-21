@@ -3,10 +3,10 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - main  # Trigger the workflow when pushing to the main branch
+      - master  # Trigger the workflow when pushing to the main branch
   pull_request:
     branches:
-      - main  # Also trigger on pull requests targeting the main branch
+      - master  # Also trigger on pull requests targeting the main branch
 
 jobs:
   build:
