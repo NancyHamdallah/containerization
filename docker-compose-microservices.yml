@@ -1,0 +1,105 @@
+services:
+  db:
+    image: mysql:5.7
+    volumes:
+      - db_data:/var/lib/mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: "1234"
+      MYSQL_DATABASE: "video_db"
+
+    expose:
+      - "3306"
+    networks:
+      - backend
+
+  auth-service:
+    image: auth-service
+    build:
+      context: ./authservice
+    environment:
+      SPRING_SECURITY_USER_NAME: "nancy"
+      SPRING_SECURITY_USER_PASSWORD: "1234"
+
+    ports:
+      - "8086:8086"
+    depends_on:
+      - db
+    networks:
+      - backend
+
+  my-sqldb-service:
+    image: my-sqldb-service
+    build:
+      context: ./MySQLDBService
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/video_db?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=1234
+    ports:
+      - "8082:8082"
+    depends_on:
+      - db
+    networks:
+      - backend
+  file-system-service:
+    image: file-system-service
+    build:
+      context: ./FileSystemS3Service
+    environment:
+      FILE_PATH: "/uploads"
+      MAX_FILE_SIZE: "300MB"
+      MAX_REQUEST_SIZE: "300MB"
+    ports:
+      - "8081:8081"
+    depends_on:
+      - db
+    volumes:
+      - ./uploads:/uploads
+    networks:
+      - backend
+
+
+  upload-video-service:
+    image: upload-video-service
+    build:
+      context: ./UploadVideoMicroservice
+    environment:
+      FILE_PATH: "/uploads"
+      MAX_FILE_SIZE: "300MB"
+      MAX_REQUEST_SIZE: "300MB"
+
+    ports:
+      - "8080:8080"
+    depends_on:
+      - auth-service
+      - file-system-service
+      - db
+    volumes:
+      - ./uploads:/uploads
+    networks:
+      - backend
+
+
+  video-stream-service:
+    image: video-stream-service
+    build:
+      context: ./VideoStreamService
+    environment:
+      SPRING_APPLICATION_NAME: "VideoStreamService"
+    ports:
+      - "8083:8083"
+    depends_on:
+      - db
+    volumes:
+      - ./uploads:/uploads
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: bridge
+
+volumes:
+  db_data:
+  file_uploads:
